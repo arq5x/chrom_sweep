@@ -75,6 +75,11 @@ def chrom_check(curr_qy, curr_db, query, database, db_cache, hits):
             report_hits(tmp_curr_qy, hits)
             tmp_curr_qy = get_next(query)
             hits = []
+        # catch query up to database
+        while (tmp_curr_qy is not None and (tmp_curr_qy.chrom < curr_db.chrom)):
+            # hits is empty to reflect the fact that no hits are found in catch-up mode
+            report_hits(tmp_curr_qy, hits)
+            tmp_curr_qy = get_next(query)
         return (tmp_curr_qy, curr_db, [], hits)
 
 
