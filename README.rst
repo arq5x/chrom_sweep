@@ -20,7 +20,7 @@ Issues
 #. Currently, it only reports the _count_ of overlaps between the Query file (A file in BEDTools parlance) and the Database file (B file).
 
 
-Future Works
+Future Work
 ==========
 #. N-files.
 #. Paralellism.
