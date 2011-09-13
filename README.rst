@@ -1,8 +1,9 @@
+
 Motivation
 ===========
 Files of genomic features continue to grow in size.  Traditional methods of detecting overlaps (e.g., R-trees, interval trees, binary search) among genomic intervals require substantial memory for very large datasets.  However, if datasets are sorted by chromosome and start position, one can, in principle, adapt principles from sort-merge and sweep-line algorithms to detect overlaps "on the fly" by marching from "left to right" across a chromosome and catching overlaps as you encounter features.
 
-This is the principle behind chromsweep.  Corner cases arise when handling changes in chromosomes in the two files. This version now handles these cases, save for the caveats laid out below in the "issues" section.
+This is the principle behind **chromsweep**.  Corner cases arise when handling changes in chromosomes in the two files. This version now handles these cases, save for the caveats laid out below in the "issues" section.
 
 Previous work
 =============
@@ -19,6 +20,10 @@ Issues
 #. Not sure if it handles cases where one file has entries for a given chrom while the other doesn't.
 #. Currently, it only reports the _count_ of overlaps between the Query file (A file in BEDTools parlance) and the Database file (B file).
 
+
+Dependencies
+============
+**chromsweep** depends upon pybedtools (https://github.com/daler/pybedtools), which is a very powerful Python library for parsing and manipulating genomic features in BED/GFF/VCF format.  
 
 Future Work
 ==========
