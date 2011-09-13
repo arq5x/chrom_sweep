@@ -7,7 +7,7 @@ This is the principle behind **chromsweep**.  Corner cases arise when handling c
 
 Previous work
 =============
-Joel Richardson published a similar algorithm called "fjoin".  This approach required that the intervals be sorted by position, irrespctive of chromosome.  Thus, it did not report results in chrom order and required files to be sorted in an atypical way for most datasets.  The following implementation has several advantages:
+Joel Richardson published a similar algorithm called "fjoin".  This approach required that the intervals be sorted by position, irrespective of chromosome.  Thus, it did not report results in chrom order and required files to be sorted in an atypical way for most datasets.  The following implementation has several advantages:
 
 #. It works with files, streams, and FIFOs
 #. It works with BED, GFF, VCF.
