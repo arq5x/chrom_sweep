@@ -102,17 +102,14 @@ def sweep(QUERY, DATABASE):
     # grab the first interval from each file
     curr_query = get_next(QUERY)
     curr_database = get_next(DATABASE)
-
+    
     while curr_query is not None:
-
         # Check if we have changed chromosomes. if so, we need to fast-forward
         # the correct chrom, report remining query overlaps, and update the cache
         (curr_query, curr_database, db_cache, hits) = chrom_check(curr_query, curr_database, QUERY, DATABASE, db_cache, hits)
-        
         # Scan the database's of seen, 
         # yet still active feature for overlaps with the current query
         db_cache = scan_cache(curr_query, db_cache, hits)
-
         # Keep advancing the database until we'e:
         # 1. reached EOF, 2. Changed chromosomes, or
         # 3. Reached an interval that is AFTER  the query (start > query's end)
@@ -122,7 +119,6 @@ def sweep(QUERY, DATABASE):
                 hits.append(curr_database)
             db_cache.append(curr_database)
             curr_database = get_next(DATABASE)
-        
         # Report the query's overlaps and move on to the next query
         report_hits(curr_query, hits)
         hits = []
