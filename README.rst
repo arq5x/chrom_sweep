@@ -11,13 +11,14 @@ Joel Richardson published a similar algorithm called "fjoin".  This approach req
 
 #. It works with files, streams, and FIFOs
 #. It works with BED, GFF, VCF.
+#. It works with compressed files.
 #. In principle, it works with BAM;  once this is ported to BEDTools it will.
 #. Typical annotation and dataset files are already sorted in exactly the manner required.
 
 Issues
 ======
 #. Requires sorting files with sort -k1,1 -k2,2n (BED files). That is, downloading straight from UCSC is not in an order that works with the chrom_check() function.  Need to investigate this.  Perhaps a misunderstanding of the Python "<" operator.
-#. Not sure if it handles cases where one file has entries for a given chrom while the other doesn't.
+#. Does not yet handle cases where the query file lacks entries for a given chrom that the database has.  Need to fix chrom_check().
 #. Currently, it only reports the _count_ of overlaps between the Query file (A file in BEDTools parlance) and the Database file (B file).
 
 
