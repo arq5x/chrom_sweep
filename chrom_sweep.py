@@ -58,13 +58,14 @@ def chrom_check(curr_query, curr_database, QUERY, DATABASE, db_cache, hits):
     before we proceed.
     """
     if curr_database is None or curr_query.chrom == curr_database.chrom:
-        return (curr_query, curr_database, db_cache, hits)
+        return (curr_query, curr_database)
     # ** The Query ** has switched chroms. We must fast-forward B
     if (curr_query.chrom > curr_database.chrom):
         tmp_curr_database = curr_database
         while (tmp_curr_database is not None and (tmp_curr_database.chrom < curr_query.chrom)):
             tmp_curr_database = get_next(DATABASE)
-        return (curr_query, tmp_curr_database, [], hits)
+        return (curr_query, tmp_curr_database)
+
     # ** The Datasbase ** has switched chroms. We must fast-forward A 
     # and scan each against the database cache in search 
     # of hits from the previous chrom
@@ -75,7 +76,8 @@ def chrom_check(curr_query, curr_database, QUERY, DATABASE, db_cache, hits):
             report_hits(tmp_curr_query, hits)
             tmp_curr_query = get_next(QUERY)
             hits = []
-        return (tmp_curr_query, curr_database, [], hits)
+        return (tmp_curr_query, curr_database)
+
 
 
 def get_next(ivls):
@@ -106,8 +108,10 @@ def sweep(QUERY, DATABASE):
     while curr_query is not None:
         # Check if we have changed chromosomes. if so, we need to fast-forward
         # the correct chrom, report remining query overlaps, and update the cache
-        (curr_query, curr_database, db_cache, hits) = \
-                     chrom_check(curr_query, curr_database, QUERY, DATABASE, db_cache, hits)
+        (curr_query, curr_database) = chrom_check(curr_query, curr_database, \
+                                                 QUERY, DATABASE, \
+                                                 db_cache, hits)
+
         # Scan the database's of seen, 
         # yet still active feature for overlaps with the current query
         db_cache = scan_cache(curr_query, db_cache, hits)
