@@ -21,7 +21,7 @@ def after(a, b):
     Is a after (to the right of) b?
     If so, never need to be looked at again.
     """
-    return a.start >= b.end
+    return (a.start >= b.end) or (a.chrom > b.chrom)
 
 
 def scan_cache(curr_query, db_cache, hits):
@@ -106,7 +106,8 @@ def sweep(QUERY, DATABASE):
     while curr_query is not None:
         # Check if we have changed chromosomes. if so, we need to fast-forward
         # the correct chrom, report remining query overlaps, and update the cache
-        (curr_query, curr_database, db_cache, hits) = chrom_check(curr_query, curr_database, QUERY, DATABASE, db_cache, hits)
+        (curr_query, curr_database, db_cache, hits) = \
+                     chrom_check(curr_query, curr_database, QUERY, DATABASE, db_cache, hits)
         # Scan the database's of seen, 
         # yet still active feature for overlaps with the current query
         db_cache = scan_cache(curr_query, db_cache, hits)
@@ -114,7 +115,7 @@ def sweep(QUERY, DATABASE):
         # 1. reached EOF, 2. Changed chromosomes, or
         # 3. Reached an interval that is AFTER  the query (start > query's end)
         # We add each feature to the cache, and track those that overlap
-        while (curr_database is not None and curr_query.chrom == curr_database.chrom and not after(curr_database, curr_query)):
+        while (curr_database is not None and not after(curr_database, curr_query)):
             if (overlaps(curr_query, curr_database) > 0):
                 hits.append(curr_database)
             db_cache.append(curr_database)
