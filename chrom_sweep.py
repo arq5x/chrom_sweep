@@ -37,6 +37,7 @@ def scan_cache(curr_qy, db_cache, hits):
     temp_cache = []
     for curr_db in db_cache:
         if (curr_qy.chrom == curr_db.chrom) and not after(curr_qy, curr_db):
+        #if not after(curr_qy, curr_db):
             temp_cache.append(curr_db)
             if overlaps(curr_qy, curr_db) > 0:
                 hits.append(curr_db)
@@ -50,7 +51,7 @@ def report_hits(curr_qy, hits):
     print str(curr_qy) + "\t" + str(len(hits))
 
 
-def chrom_check(curr_qy, curr_db, QUERY, DATABASE, db_cache, hits):
+def chrom_check(curr_qy, curr_db, query, database, db_cache, hits):
     """
     Check if both files are at the same chromosome.
     If not, we need to fast forward the lagging file
@@ -62,18 +63,25 @@ def chrom_check(curr_qy, curr_db, QUERY, DATABASE, db_cache, hits):
     elif (curr_qy.chrom > curr_db.chrom):
         tmp_curr_db = curr_db
         while (tmp_curr_db is not None and (tmp_curr_db.chrom < curr_qy.chrom)):
-            tmp_curr_db = get_next(DATABASE)
+            tmp_curr_db = get_next(database)
         return (curr_qy, tmp_curr_db)
-    # ** The Database ** has switched chroms. We must fast-forward A 
-    # and scan each against the database cache in search 
-    # of hits from the previous chrom
+    # ** The Database ** has switched chroms. We must:
+    # 1. Scan each remaining query for the current QUERY chrom
+    #    against the database cache in search of hits
+    # 2. Fast-forward the QUERY to catch-up w/ DATABASE.
     elif (curr_qy.chrom < curr_db.chrom):
+        # scan remaining query for curr chrom against db_cache
         tmp_curr_qy = curr_qy
         while (tmp_curr_qy is not None and (tmp_curr_qy.chrom == curr_qy.chrom)):
             db_cache = scan_cache(tmp_curr_qy, db_cache, hits)
             report_hits(tmp_curr_qy, hits)
-            tmp_curr_qy = get_next(QUERY)
+            tmp_curr_qy = get_next(query)
             hits = []
+        # # catch QUERY up to DATABASE
+        # while (tmp_curr_qy is not None and (tmp_curr_qy.chrom < curr_db.chrom)):
+        #     tmp_curr_qy = get_next(query)
+        #     # hits is empty to reflect the fact that no hits are found in catch-up mode
+        #     report_hits(tmp_curr_qy, hits)
         return (tmp_curr_qy, curr_db)
 
 
@@ -89,26 +97,26 @@ def get_next(ivls):
         return None
 
 
-def sweep(QUERY, DATABASE):
+def sweep(query, database):
     """
-    Sweep through QUERY and DB (interval files) in one pass
+    Sweep through query and database (interval files) in one pass
     and detect overlaps on the fly.
 
-    In BEDTools parlance, QUERY == A, DB == B
+    In BEDTools parlance, query == A, database == B
     """
     hits  = []
     db_cache = []
 
     # grab the first interval from each file
-    curr_qy = get_next(QUERY)
-    curr_db = get_next(DATABASE)
+    curr_qy = get_next(query)
+    curr_db = get_next(database)
     
     while curr_qy is not None:
         # Check if we have changed chromosomes. if so, we need to 
         # fast-forward the correct chrom, report remaining 
         # query overlaps, and update the cache
         (curr_qy, curr_db) = chrom_check(curr_qy, curr_db, \
-                                         QUERY, DATABASE, \
+                                         query, database, \
                                          db_cache, hits)
 
         # Scan the database's of seen, yet still active features 
@@ -122,11 +130,11 @@ def sweep(QUERY, DATABASE):
             if (overlaps(curr_qy, curr_db) > 0):
                 hits.append(curr_db)
             db_cache.append(curr_db)
-            curr_db = get_next(DATABASE)
+            curr_db = get_next(database)
         # Report the query's overlaps and move on to the next query
         report_hits(curr_qy, hits)
         hits = []
-        curr_qy = get_next(QUERY)
+        curr_qy = get_next(query)
 
 
 if __name__ == "__main__":
@@ -139,7 +147,7 @@ if __name__ == "__main__":
     database_file = sys.argv[2]
 
     # open up the BED files.
-    QUERY       = IntervalFile(query_file) # The Query File
-    DATABASE    = IntervalFile(database_file) # The Database File
-    sweep(QUERY, DATABASE)
+    query       = IntervalFile(query_file) # The Query File
+    database    = IntervalFile(database_file) # The Database File
+    sweep(query, database)
 
