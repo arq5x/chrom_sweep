@@ -17,13 +17,20 @@ Joel Richardson published a similar algorithm called "fjoin".  This approach req
 
 Issues
 ======
-#. Requires sorting files with sort -k1,1 -k2,2n (BED files). That is, downloading straight from UCSC is not in an order that works with the chrom_check() function.  Need to investigate this.  Perhaps a misunderstanding of the Python "<" operator.
 #. Currently, it only reports the _count_ of overlaps between the Query file (A file in BEDTools parlance) and the Database file (B file).
 
 
-Dependencies
+Requirements
 ============
-**chromsweep** depends upon pybedtools (https://github.com/daler/pybedtools), which is a very powerful Python library for parsing and manipulating genomic features in BED/GFF/VCF format.  
+#. **chromsweep** depends upon pybedtools (https://github.com/daler/pybedtools), which is a very powerful Python library for parsing and manipulating genomic features in BED/GFF/VCF format.
+#. Files must be sorted by chrom, then start position. For BED files, the following will work:
+
+::
+
+	$ sort -k1,1 -k2,2n data.bed > data.sorted.bed
+	
+Alternatively, the BEDTools sortBed can be used to sort BED/GFF/VCF files in this manner.
+
 
 Future Work
 ==========
